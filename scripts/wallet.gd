@@ -6,7 +6,7 @@ extends Node
 
 signal money_changed(amount: int)
 
-const BRANDING_PATH := "res://branding.json"
+const BRANDING_PATH := "res://ktmmap.json"
 
 var money := 0
 ## Read from branding.json so a rebrand can change it without code.
