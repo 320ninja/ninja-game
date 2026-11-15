@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/parked_cars.gd" id="10_parked"]
 [ext_resource type="Script" path="res://scripts/mission_01.gd" id="11_mission01"]
 [ext_resource type="Script" path="res://scripts/mission_02.gd" id="14_mission02"]
+[ext_resource type="Script" path="res://scripts/mission_03.gd" id="15_mission03"]
 [ext_resource type="Script" path="res://scripts/mission_trigger.gd" id="12_trigger"]
 [ext_resource type="PackedScene" path="res://assets/characters/UAL1_Standard.glb" id="13_npc"]
 [ext_resource type="Script" path="res://scripts/mountains.gd" id="14_mountains"]
@@ -149,6 +150,35 @@ script = ExtResource("12_trigger")
 radius = 4.0
 colour = Color(0.3, 1.0, 0.45, 1)
 label = "Durbar Square - Finish!"
+
+
+[node name="Mission03" type="Node3D" parent="."]
+script = ExtResource("15_mission03")
+mission_id = "mission_03"
+title = "Taxi Job"
+giver_name = "Dispatch"
+intro_text = "Passenger waiting near Ratna Park. Pick them up and take them to New Road."
+time_limit = 90.0
+reward = 400
+
+[node name="Giver" type="Area3D" parent="Mission03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -50)
+script = ExtResource("12_trigger")
+label = "Taxi Job"
+
+[node name="Pickup" type="Area3D" parent="Mission03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -100)
+script = ExtResource("12_trigger")
+radius = 3.0
+colour = Color(1.0, 0.55, 0.1, 1)
+label = "Passenger - Ratna Park"
+
+[node name="Dropoff" type="Area3D" parent="Mission03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 100)
+script = ExtResource("12_trigger")
+radius = 3.0
+colour = Color(0.3, 1.0, 0.45, 1)
+label = "New Road - Drop Off"
 
 [node name="FollowCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 3, 8)
