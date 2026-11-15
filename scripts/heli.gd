@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var up_input := 0.0
-	if Input.is_key_pressed(KEY_SPACE):
+	if Input.is_key_pressed(KEY_SPACE) or TouchControls.held("jump"):
 		up_input += 1.0
 	if Input.is_key_pressed(KEY_SHIFT):
 		up_input -= 1.0
@@ -48,12 +48,14 @@ func _physics_process(delta: float) -> void:
 		fwd_input += 1.0
 	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
 		fwd_input -= 1.0
+	fwd_input = clampf(fwd_input + TouchControls.move.y, -1.0, 1.0)
 
 	var yaw_input := 0.0
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		yaw_input += 1.0
 	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
 		yaw_input -= 1.0
+	yaw_input = clampf(yaw_input - TouchControls.move.x, -1.0, 1.0)
 
 	rotation.y += yaw_input * yaw_rate * delta
 	# Cosmetic lean into the stick; the collision box stays functionally level.

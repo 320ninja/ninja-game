@@ -78,7 +78,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 		move_and_slide()
 		return
-	if is_on_floor() and Input.is_key_pressed(KEY_SPACE):
+	if is_on_floor() and (Input.is_key_pressed(KEY_SPACE) or TouchControls.held("jump")):
 		velocity.y = jump_velocity
 
 	var input := Vector2.ZERO
@@ -90,9 +90,9 @@ func _physics_process(delta: float) -> void:
 		input.x += 1.0
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		input.x -= 1.0
-	input = input.limit_length(1.0)
+	input = (input + TouchControls.move).limit_length(1.0)
 
-	running = Input.is_key_pressed(KEY_SHIFT)
+	running = Input.is_key_pressed(KEY_SHIFT) or TouchControls.move.length() > 0.9
 	var speed := run_speed if running else walk_speed
 
 	var direction := _camera_relative(input)
@@ -107,7 +107,7 @@ func _physics_process(delta: float) -> void:
 		rotation.y = lerp_angle(rotation.y, wanted, turn_speed * delta)
 
 	_punch_cooldown = maxf(_punch_cooldown - delta, 0.0)
-	if Input.is_key_pressed(KEY_F) and _punch_cooldown == 0.0:
+	if (Input.is_key_pressed(KEY_F) or TouchControls.held("punch")) and _punch_cooldown == 0.0:
 		_punch_cooldown = 0.6
 		_punch()
 		_anim.play("Punch_Jab", 0.1)

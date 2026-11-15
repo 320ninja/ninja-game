@@ -1,6 +1,6 @@
 class_name WeaponManager
 extends Node3D
-## On the Player. G picks up, R reloads, left click / tap fires.
+## On the Player. G picks up, R reloads, left click fires (touch FIRE button calls fire()).
 
 signal weapon_changed(weapon: Weapon)
 
@@ -26,9 +26,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			pick_up_nearest()
 		elif event.keycode == KEY_R:
 			reload()
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		fire()
-	elif event is InputEventScreenTouch and event.pressed:
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT \
+			and event.device != InputEvent.DEVICE_ID_EMULATION:
 		fire()
 
 

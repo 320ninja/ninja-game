@@ -21,7 +21,7 @@ func _ready() -> void:
 	_game = get_tree().get_first_node_in_group("game")
 	# Don't grab the mouse during automated runs - stray cursor motion would
 	# swing the camera and silently corrupt the measurements.
-	if not _running_self_test():
+	if not _running_self_test() and not TouchControls.enabled:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
@@ -40,11 +40,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		# Let the mouse out so the window can be closed or moved.
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event is InputEventMouseButton and event.pressed:
+	elif event is InputEventMouseButton and event.pressed and not TouchControls.enabled:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 func _physics_process(delta: float) -> void:
+	var look := TouchControls.take_look()
+	yaw -= look.x
+	_pitch = clampf(_pitch - look.y, min_pitch, max_pitch)
 	var target := _target()
 	if target == null:
 		return

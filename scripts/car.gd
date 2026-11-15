@@ -74,12 +74,14 @@ func _physics_process(delta: float) -> void:
 		throttle += 1.0
 	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
 		throttle -= 1.0
+	throttle = clampf(throttle + TouchControls.move.y, -1.0, 1.0)
 
 	var steer_input := 0.0
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		steer_input += 1.0
 	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
 		steer_input -= 1.0
+	steer_input = clampf(steer_input - TouchControls.move.x, -1.0, 1.0)
 
 	var speed := get_speed_kmh()
 	boosting = Input.is_key_pressed(KEY_SHIFT) and throttle > 0.0
@@ -94,7 +96,7 @@ func _physics_process(delta: float) -> void:
 		force = max_engine_force * reverse_force_factor
 	engine_force = FORWARD * throttle * force
 
-	if Input.is_key_pressed(KEY_SPACE):
+	if Input.is_key_pressed(KEY_SPACE) or TouchControls.held("jump"):
 		brake = max_brake_force
 	elif is_zero_approx(throttle):
 		brake = coast_brake

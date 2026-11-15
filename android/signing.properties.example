@@ -1,0 +1,7 @@
+# Copy to signing.properties (git-ignored) and fill in. Never commit real values.
+# Create a key: keytool -genkeypair -v -keystore android/release.keystore -alias ninja -keyalg RSA -keysize 2048 -validity 10000
+# Then in Godot: Project > Export > Android > Keystore > Release = these values
+# (Godot stores them in .godot/export_credentials.cfg, which is git-ignored).
+release_keystore=android/release.keystore
+release_user=ninja
+release_password=CHANGE_ME

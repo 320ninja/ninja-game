@@ -1,6 +1,8 @@
 # Godot 4 import cache and editor state (regenerated on open)
 .godot/
-/android/
+/android/build/
+/android/*.keystore
+/android/signing.properties
 
 # Older Godot versions / misc
 .import/
