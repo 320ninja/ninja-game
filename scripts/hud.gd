@@ -42,7 +42,6 @@ func _ready() -> void:
 	_build_mission_ui()
 	_minimap = load("res://scripts/minimap.gd").new()
 	add_child(_minimap)
-	add_child(load("res://scripts/touch_controls.gd").new())
 	Wallet.money_changed.connect(_on_money_changed)
 	if has_node("/root/Radio"):
 		get_node("/root/Radio").station_changed.connect(_on_station_changed)
