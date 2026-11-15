@@ -49,16 +49,25 @@ func _dress() -> void:
 	var mesh: MeshInstance3D = $Model.find_child("Mannequin", true, false)
 	if mesh == null:
 		return
+	# Black overshirt / jacket (surface 0 = main body)
 	var main: StandardMaterial3D = mesh.mesh.surface_get_material(0).duplicate()
-	main.albedo_color = Color(0.30, 0.36, 0.44)  # slate-blue jacket
+	main.albedo_color = Color(0.08, 0.08, 0.09)  # near-black jacket
 	main.metallic = 0.0
-	main.roughness = 0.85  # fabric, not chrome
+	main.roughness = 0.88
 	mesh.set_surface_override_material(0, main)
+	# Joint bands recoloured to match skin tone (medium-dark, tattooed arms vibe)
 	var joints: StandardMaterial3D = mesh.mesh.surface_get_material(1).duplicate()
-	joints.albedo_color = Color(0.15, 0.16, 0.18)  # near-black seams
+	joints.albedo_color = Color(0.52, 0.36, 0.26)  # warm brown skin
 	joints.metallic = 0.0
-	joints.roughness = 0.9
+	joints.roughness = 0.78
 	mesh.set_surface_override_material(1, joints)
+	# Head / face skin tone
+	var head_node := $Model.find_child("Head", true, false) as MeshInstance3D
+	if head_node != null:
+		var head_mat: StandardMaterial3D = StandardMaterial3D.new()
+		head_mat.albedo_color = Color(0.52, 0.36, 0.26)
+		head_mat.roughness = 0.78
+		head_node.material_override = head_mat
 
 
 func _physics_process(delta: float) -> void:
