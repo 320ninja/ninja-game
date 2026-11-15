@@ -11,14 +11,22 @@ extends CharacterBody3D
 @export var turn_speed := 12.0
 
 var running := false
+var dead := false
+
+const HOSPITAL := Vector3(-31.2, 0.5, 8.0)
+const RESPAWN_DELAY := 3.0
+const PUNCH_DAMAGE := 8.0
 
 var _punch_cooldown := 0.0
 
 @onready var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 14.0)
 @onready var _anim: AnimationPlayer = $Model/AnimationPlayer
+@onready var health: Health = $Health
+@onready var weapons: WeaponManager = $WeaponManager
 
 ## Locomotion clips loop; everything else is one-shot.
-const LOOPED_ANIMS := ["Idle", "Walk", "Jog_Fwd", "Sprint"]
+const LOOPED_ANIMS := ["Idle", "Walk", "Jog_Fwd", "Sprint", "Pistol_Idle"]
+const ONE_SHOTS := ["Punch", "Pistol_Shoot", "Pistol_Reload"]
 
 
 func _ready() -> void:
@@ -30,6 +38,7 @@ func _ready() -> void:
 	_anim.playback_default_blend_time = 0.2
 	_anim.play("Idle")
 	_dress()
+	health.died.connect(_on_died)
 
 
 ## The Quaternius mannequin ships banana-yellow with purple joint bands.
@@ -53,7 +62,12 @@ func _dress() -> void:
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
-	elif Input.is_key_pressed(KEY_SPACE):
+	if dead:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		return
+	if is_on_floor() and Input.is_key_pressed(KEY_SPACE):
 		velocity.y = jump_velocity
 
 	var input := Vector2.ZERO
@@ -94,7 +108,10 @@ func _physics_process(delta: float) -> void:
 ## Pick the clip that matches what the body is actually doing. Punches are
 ## one-shots: while one is playing, locomotion keeps its hands off the player.
 func _update_animation() -> void:
-	if _anim.current_animation.begins_with("Punch") and _anim.is_playing():
+	if _anim.is_playing() and ONE_SHOTS.any(func(a): return _anim.current_animation.begins_with(a)):
+		return
+	if weapons.current != null and weapons.current.reloading:
+		_anim.play("Pistol_Reload", 0.1)
 		return
 
 	var target: String
@@ -103,7 +120,7 @@ func _update_animation() -> void:
 	else:
 		var speed := get_speed_kmh() / 3.6
 		if speed < 0.3:
-			target = "Idle"
+			target = "Pistol_Idle" if weapons.current != null else "Idle"
 		elif speed < walk_speed + 0.4:
 			target = "Walk"
 		elif running:
@@ -122,6 +139,41 @@ func _punch() -> void:
 		var to: Vector3 = ped.global_position - global_position
 		if to.length() < 2.0 and to.normalized().dot(forward) > 0.2:
 			ped.knock(randf_range(1.5, 3.0))
+	for officer in get_tree().get_nodes_in_group("police"):
+		var to: Vector3 = officer.global_position - global_position
+		if to.length() < 2.0 and to.normalized().dot(forward) > 0.2:
+			officer.health.take_damage(PUNCH_DAMAGE)
+			_hit_officer()
+
+
+func on_weapon_fired(hit: Object) -> void:
+	_anim.play("Pistol_Shoot", 0.05)
+	if hit is Node and hit.is_in_group("police"):
+		_hit_officer()
+	elif hit != null and hit.has_method("knock"):
+		hit.knock(randf_range(3.0, 5.0))
+
+
+func _hit_officer() -> void:
+	WantedSystem.raise()
+
+
+func _on_died() -> void:
+	dead = true
+	_anim.play("Death01", 0.15)
+	get_tree().call_group("hud", "show_banner", "YOU DIED", Color(1.0, 0.3, 0.3))
+	await get_tree().create_timer(RESPAWN_DELAY).timeout
+	respawn_at_hospital()
+
+
+func respawn_at_hospital() -> void:
+	global_position = HOSPITAL
+	velocity = Vector3.ZERO
+	health.revive()
+	WantedSystem.clear()
+	dead = false
+	_anim.play("Idle", 0.0)
+	get_tree().call_group("hud", "show_banner", "Bir Hospital", Color.WHITE)
 
 
 ## Turn WASD into a world-space direction based on the active camera's yaw.

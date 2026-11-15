@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -19,6 +19,8 @@
 [ext_resource type="Script" path="res://scripts/mountains.gd" id="14_mountains"]
 [ext_resource type="Script" path="res://scripts/microbus.gd" id="15_microbus"]
 [ext_resource type="Script" path="res://scripts/police_spawner.gd" id="17_police"]
+[ext_resource type="Script" path="res://scripts/weapon_pickup.gd" id="18_pickup"]
+[ext_resource type="Script" path="res://scripts/weapon_pistol.gd" id="19_pistol"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.48, 0.72, 1)
@@ -212,6 +214,21 @@ radius = 4.0
 colour = Color(0.3, 1.0, 0.45, 1)
 label = "Safe House"
 
+[node name="PistolAson" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -106.8, 0.16, 50)
+script = ExtResource("18_pickup")
+weapon_script = ExtResource("19_pistol")
+
+[node name="PistolThamel" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -106.8, 0.16, -120)
+script = ExtResource("18_pickup")
+weapon_script = ExtResource("19_pistol")
+
+[node name="PistolNewRoad" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0.16, 106.8)
+script = ExtResource("18_pickup")
+weapon_script = ExtResource("19_pistol")
+
 [node name="PoliceSpawner" type="Node3D" parent="."]
 script = ExtResource("17_police")
 
@@ -251,11 +268,11 @@ theme_override_font_sizes/font_size = 22
 [node name="Controls" type="Label" parent="HUD"]
 offset_left = 30.0
 offset_top = 112.0
-offset_right = 640.0
+offset_right = 1250.0
 offset_bottom = 152.0
 theme_override_colors/font_color = Color(0.86, 0.88, 0.92, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_font_sizes/font_size = 16
-text = "WASD  move / drive / fly      E  enter / exit      SHIFT  run / boost / heli down      SPACE  jump / brake / heli up      F  punch      R  respawn      ESC  cursor"
+text = "WASD  move / drive / fly      E  enter / exit      SHIFT  run / boost / heli down      SPACE  jump / brake / heli up      F  punch      G  pick up gun      LMB  shoot      R  reload / reset car      ESC  cursor"

@@ -12,6 +12,7 @@ extends CharacterBody3D
 ##
 ## Catch the player on foot (or stopped in a car) for a moment = busted.
 ## Hit an officer with a car = one more star.
+## From 2 stars, officers shoot at a player on foot within 20 m.
 
 enum State { PATROL, CHASE, SEARCH }
 
@@ -22,6 +23,9 @@ const SEARCH_GIVE_UP := 6.0
 ## Star level from which a chasing officer radios for backup.
 const BACKUP_LEVEL := 3
 const BACKUP_INTERVAL := 15.0
+const SHOOT_LEVEL := 2
+const SHOOT_RANGE := 20.0
+const CORPSE_TIME := 8.0
 
 var walk_speed := 1.8
 var run_speed := 7.5
@@ -45,6 +49,10 @@ var _backup_cooldown := 0.0
 var _down := 0.0
 var _visual: Node3D
 var _game: Node
+var _shoot_delay := 0.0
+var _gun: Weapon
+var health: Health
+var dead := false
 
 @onready var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 14.0)
 
@@ -53,6 +61,7 @@ func _ready() -> void:
 	add_to_group("police")
 	_apply_config()
 	_build_visual()
+	_arm()
 	_pick_patrol_target()
 	# Stagger sight checks so a squad doesn't raycast on the same frame.
 	_sight_timer = randf() * SIGHT_INTERVAL
@@ -61,7 +70,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
+	if dead:
+		_stop()
+		move_and_slide()
+		return
 	_backup_cooldown = maxf(_backup_cooldown - delta, 0.0)
+	_shoot_delay = maxf(_shoot_delay - delta, 0.0)
 
 	if _game == null:
 		_game = get_tree().get_first_node_in_group("game")
@@ -84,6 +98,7 @@ func _physics_process(delta: float) -> void:
 			_patrol(delta)
 		State.CHASE:
 			_chase(target, delta)
+			_try_shoot(target)
 		State.SEARCH:
 			_search(delta)
 
@@ -132,7 +147,8 @@ func _patrol(delta: float) -> void:
 
 
 func _chase(target: Node3D, delta: float) -> void:
-	if target == null:
+	if target == null or target.get("dead") == true:
+		_stop()
 		return
 	var distance := _flat_distance(target.global_position)
 	if distance > arrest_distance:
@@ -146,6 +162,43 @@ func _chase(target: Node3D, delta: float) -> void:
 		if _arrest_progress >= arrest_time:
 			_arrest_progress = 0.0
 			WantedSystem.bust()
+
+
+func _try_shoot(target: Node3D) -> void:
+	if WantedSystem.level < SHOOT_LEVEL or not _can_see or _shoot_delay > 0.0:
+		return
+	if target == null or not target.is_in_group("player") or target.dead:
+		return
+	var eye := global_position + Vector3.UP * 1.3
+	var aim := target.global_position + Vector3.UP * 1.1
+	if eye.distance_to(aim) > SHOOT_RANGE:
+		return
+	rotation.y = atan2(aim.x - eye.x, aim.z - eye.z)
+	_gun.fire(eye, aim - eye, self)
+	_shoot_delay = randf_range(0.6, 1.4)
+
+
+func _arm() -> void:
+	health = Health.new()
+	health.name = "Health"
+	health.max_hp = 60.0
+	add_child(health)
+	health.died.connect(_on_died)
+	_gun = WeaponPistol.new()
+	_gun.damage = 10.0
+	_gun.spread = 0.05
+	_gun.infinite_reserve = true
+	_gun.position = Vector3(0.3, 1.1, 0.3)
+	add_child(_gun)
+
+
+func _on_died() -> void:
+	dead = true
+	remove_from_group("police")
+	_visual.rotation.x = -PI * 0.5
+	_gun.visible = false
+	$Collision.set_deferred("disabled", true)
+	get_tree().create_timer(CORPSE_TIME).timeout.connect(queue_free)
 
 
 func _search(delta: float) -> void:
@@ -309,6 +362,7 @@ func _build_visual() -> void:
 	_visual.add_child(cap)
 
 	var col := CollisionShape3D.new()
+	col.name = "Collision"
 	var shape := CapsuleShape3D.new()
 	shape.radius = 0.3
 	shape.height = 1.45

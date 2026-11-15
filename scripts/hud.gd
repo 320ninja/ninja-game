@@ -22,6 +22,10 @@ var _dialogue_left := 0.0
 var _banner_left := 0.0
 var _stars: WantedStars
 var _minimap: Node
+var _health_bar: ProgressBar
+var _ammo: Label
+var _player_health: Health
+var _weapons: WeaponManager
 
 
 func _ready() -> void:
@@ -39,6 +43,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_tick_popups(delta)
+	_update_combat()
 
 	if _game == null:
 		_game = get_tree().get_first_node_in_group("game")
@@ -61,6 +66,18 @@ func _process(delta: float) -> void:
 		_speed.text = "on foot"
 		_speed.modulate = Color.WHITE
 		_prompt.text = "E   get in" if _game.nearest_vehicle() != null else ""
+
+
+func _update_combat() -> void:
+	if _player_health == null:
+		_player_health = Health.of(get_tree().get_first_node_in_group("player"))
+		_weapons = get_tree().get_first_node_in_group("weapon_manager")
+	if _player_health != null:
+		_health_bar.value = _player_health.current_hp / _player_health.max_hp * 100.0
+	var weapon: Weapon = _weapons.current if _weapons != null else null
+	_ammo.visible = weapon != null
+	if weapon != null:
+		_ammo.text = "RELOADING" if weapon.reloading else "%d / %d" % [weapon.ammo, weapon.reserve]
 
 
 # --- Mission UI -----------------------------------------------------------
@@ -143,6 +160,33 @@ func _build_mission_ui() -> void:
 	_banner.offset_top = -140.0
 	_banner.offset_bottom = 20.0
 	_banner.visible = false
+
+	_health_bar = ProgressBar.new()
+	_health_bar.show_percentage = false
+	_health_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_health_bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	_health_bar.offset_left = 0.0
+	_health_bar.offset_right = 150.0
+	_health_bar.offset_top = -206.0
+	_health_bar.offset_bottom = -190.0
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color(0.85, 0.12, 0.12)
+	fill.set_corner_radius_all(4)
+	var back := StyleBoxFlat.new()
+	back.bg_color = Color(0.05, 0.05, 0.07, 0.75)
+	back.set_corner_radius_all(4)
+	_health_bar.add_theme_stylebox_override("fill", fill)
+	_health_bar.add_theme_stylebox_override("background", back)
+	_health_bar.value = 100.0
+	add_child(_health_bar)
+
+	_ammo = _make_label(32, HORIZONTAL_ALIGNMENT_RIGHT)
+	_ammo.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	_ammo.offset_left = -320.0
+	_ammo.offset_right = -28.0
+	_ammo.offset_top = -76.0
+	_ammo.offset_bottom = -28.0
+	_ammo.visible = false
 
 	_stars = WantedStars.new()
 	_stars.position = Vector2(28.0, 152.0)
