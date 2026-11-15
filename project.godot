@@ -16,6 +16,7 @@ DevCapture="*res://scripts/dev_capture.gd"
 Wallet="*res://scripts/wallet.gd"
 WantedSystem="*res://scripts/wanted.gd"
 Radio="*res://scripts/radio.gd"
+DayNight="*res://scripts/day_night.gd"
 
 [display]
 

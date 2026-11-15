@@ -32,6 +32,8 @@ var _weapons: WeaponManager
 var _radio_label: Label
 var _radio_left := 0.0
 const RADIO_SHOW := 2.5
+var _clock: Label
+var _clock_icon: ClockIcon
 
 
 func _ready() -> void:
@@ -52,6 +54,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_tick_popups(delta)
 	_update_combat()
+	_clock.text = DayNight.clock_text()
+	_clock_icon.hour = DayNight.hour
+	_clock_icon.queue_redraw()
 
 	if _game == null:
 		_game = get_tree().get_first_node_in_group("game")
@@ -192,9 +197,23 @@ func _build_mission_ui() -> void:
 	_timer.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_timer.offset_left = -120.0
 	_timer.offset_right = 120.0
-	_timer.offset_top = 16.0
-	_timer.offset_bottom = 76.0
+	_timer.offset_top = 44.0
+	_timer.offset_bottom = 104.0
 	_timer.visible = false
+
+	var clock_row := HBoxContainer.new()
+	clock_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	clock_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clock_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	clock_row.offset_left = -80.0
+	clock_row.offset_right = 80.0
+	clock_row.offset_top = 10.0
+	clock_row.offset_bottom = 38.0
+	add_child(clock_row)
+	_clock_icon = ClockIcon.new()
+	clock_row.add_child(_clock_icon)
+	_clock = _make_label(22, HORIZONTAL_ALIGNMENT_LEFT)
+	_clock.reparent(clock_row)
 
 	_banner = _make_label(56, HORIZONTAL_ALIGNMENT_CENTER)
 	_banner.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
@@ -346,3 +365,21 @@ class WantedStars extends Control:
 			var a := -PI * 0.5 + k * PI / 5.0
 			points.append(centre + Vector2(cos(a), sin(a)) * r)
 		return points
+
+
+class ClockIcon extends Control:
+	var hour := 0.0
+
+	func _init() -> void:
+		custom_minimum_size = Vector2(22, 22)
+		size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var c := size * 0.5
+		draw_circle(c, 10.0, Color(0, 0, 0, 0.5))
+		draw_arc(c, 9.0, 0.0, TAU, 24, Color.WHITE, 2.0, true)
+		var h := fmod(hour, 12.0) / 12.0 * TAU - PI * 0.5
+		var m := fmod(hour, 1.0) * TAU - PI * 0.5
+		draw_line(c, c + Vector2(cos(h), sin(h)) * 5.0, Color.WHITE, 2.0, true)
+		draw_line(c, c + Vector2(cos(m), sin(m)) * 7.5, Color.WHITE, 1.5, true)

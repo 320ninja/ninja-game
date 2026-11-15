@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -22,6 +22,7 @@
 [ext_resource type="Script" path="res://scripts/police_spawner.gd" id="17_police"]
 [ext_resource type="Script" path="res://scripts/weapon_pickup.gd" id="18_pickup"]
 [ext_resource type="Script" path="res://scripts/weapon_pistol.gd" id="19_pistol"]
+[ext_resource type="Script" path="res://scripts/atm.gd" id="20_atm"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.48, 0.72, 1)
@@ -291,6 +292,18 @@ weapon_script = ExtResource("19_pistol")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0.16, 106.8)
 script = ExtResource("18_pickup")
 weapon_script = ExtResource("19_pistol")
+
+[node name="AtmRatnaPark" type="Area3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.16, -107.2)
+script = ExtResource("20_atm")
+
+[node name="AtmThamel" type="Area3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -107.2, 0.16, -130)
+script = ExtResource("20_atm")
+
+[node name="AtmNewRoad" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0.16, 107.2)
+script = ExtResource("20_atm")
 
 [node name="PoliceSpawner" type="Node3D" parent="."]
 script = ExtResource("17_police")

@@ -224,7 +224,7 @@ func _can_arrest(target: Node3D) -> bool:
 func _sees(target: Node3D) -> bool:
 	var eye := global_position + Vector3.UP * EYE_HEIGHT
 	var aim := target.global_position + Vector3.UP * 1.0
-	if eye.distance_to(aim) > sight_radius:
+	if eye.distance_to(aim) > DayNight.police_sight(sight_radius):
 		return false
 	var query := PhysicsRayQueryParameters3D.create(eye, aim)
 	var exclude: Array[RID] = [get_rid()]
