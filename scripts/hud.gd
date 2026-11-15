@@ -8,10 +8,10 @@ extends CanvasLayer
 const DIALOGUE_SECONDS := 5.0
 const BANNER_SECONDS := 3.5
 
-@onready var _speed: Label = $Speed
-@onready var _prompt: Label = $Prompt
+@onready var _speed:   Label = $Speed
+@onready var _prompt:  Label = $Prompt
 
-var _game: Node
+var _game:    Node
 
 var _money: Label
 var _timer: Label
@@ -37,6 +37,7 @@ func _process(delta: float) -> void:
 		_game = get_tree().get_first_node_in_group("game")
 		return
 
+	# --- speed / vehicle prompt ---
 	var active: Node = _game.get_active()
 	if active == null:
 		return

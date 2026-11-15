@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -13,6 +13,8 @@
 [ext_resource type="Script" path="res://scripts/mission_01.gd" id="11_mission01"]
 [ext_resource type="Script" path="res://scripts/mission_trigger.gd" id="12_trigger"]
 [ext_resource type="PackedScene" path="res://assets/characters/UAL1_Standard.glb" id="13_npc"]
+[ext_resource type="Script" path="res://scripts/mountains.gd" id="14_mountains"]
+[ext_resource type="Script" path="res://scripts/microbus.gd" id="15_microbus"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.48, 0.72, 1)
@@ -67,6 +69,19 @@ script = ExtResource("9_props")
 
 [node name="ParkedCars" type="Node3D" parent="."]
 script = ExtResource("10_parked")
+
+[node name="Mountains" type="Node3D" parent="."]
+script = ExtResource("14_mountains")
+
+[node name="MicroBus1" type="VehicleBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.6, 0.5, 30.0)
+script = ExtResource("15_microbus")
+body_color = Color(0.15, 0.55, 0.85, 1)
+
+[node name="MicroBus2" type="VehicleBody3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 60.0, 0.5, -28.6)
+script = ExtResource("15_microbus")
+body_color = Color(0.90, 0.75, 0.10, 1)
 
 [node name="Car" parent="." instance=ExtResource("4_car")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 1.0, 0)

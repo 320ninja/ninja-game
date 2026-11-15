@@ -11,21 +11,23 @@ const GRID := 7
 const SIDEWALK_HEIGHT := 0.16
 const PED_COUNT := 60
 
+## Nepali dress colours: kurta suruwal, saris, daura suruwal, school uniforms.
 const SHIRTS: Array[Color] = [
-	Color(0.24, 0.33, 0.50),
-	Color(0.55, 0.20, 0.18),
-	Color(0.20, 0.42, 0.28),
-	Color(0.65, 0.60, 0.50),
-	Color(0.30, 0.28, 0.34),
-	Color(0.72, 0.48, 0.16),
-	Color(0.14, 0.14, 0.16),
+	Color(0.80, 0.12, 0.12),  # bright red sari
+	Color(0.90, 0.60, 0.05),  # marigold/saffron kurta
+	Color(0.15, 0.50, 0.25),  # forest green kurta
+	Color(0.70, 0.18, 0.55),  # magenta sari
+	Color(0.18, 0.28, 0.65),  # indigo / school uniform blue
+	Color(0.88, 0.85, 0.80),  # white daura suruwal
+	Color(0.48, 0.14, 0.14),  # maroon
+	Color(0.95, 0.80, 0.30),  # golden yellow
 ]
 
 const SKINS: Array[Color] = [
-	Color(0.85, 0.68, 0.55),
-	Color(0.72, 0.56, 0.44),
-	Color(0.55, 0.40, 0.30),
-	Color(0.38, 0.27, 0.20),
+	Color(0.80, 0.63, 0.50),  # wheatish
+	Color(0.70, 0.54, 0.42),  # medium brown
+	Color(0.60, 0.46, 0.35),  # olive-brown (Hilly)
+	Color(0.52, 0.38, 0.28),  # darker (Terai)
 ]
 
 var _rng := RandomNumberGenerator.new()
@@ -57,8 +59,9 @@ func _ready() -> void:
 		ped.corners = corners
 		ped.corner_idx = (seg + 1) % 4
 		ped.walk_speed = _rng.randf_range(1.1, 2.2)
-		ped.shirt = SHIRTS[_rng.randi() % SHIRTS.size()]
-		ped.skin = SKINS[_rng.randi() % SKINS.size()]
+		ped.shirt      = SHIRTS[_rng.randi() % SHIRTS.size()]
+		ped.skin       = SKINS[_rng.randi() % SKINS.size()]
+		ped.wear_topi  = _rng.randf() < 0.35  # ~35 % of NPCs wear a topi
 		add_child(ped)
 		# Somewhere along the chosen segment, already heading for its end.
 		ped.global_position = corners[seg].lerp(corners[(seg + 1) % 4], _rng.randf()) \

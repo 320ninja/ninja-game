@@ -6,7 +6,9 @@ var corners := PackedVector3Array()
 var corner_idx := 0
 var walk_speed := 1.6
 var shirt := Color(0.4, 0.4, 0.5)
-var skin := Color(0.75, 0.6, 0.5)
+var skin  := Color(0.75, 0.6, 0.5)
+## true  → draws a Nepali topi (white flat cap) on this NPC's head.
+var wear_topi := false
 
 var _pause := 0.0
 var _down := 0.0
@@ -108,6 +110,22 @@ func _build_visual() -> void:
 	head.material_override = skin_mat
 	head.position = Vector3(0.0, 1.56, 0.0)
 	_visual.add_child(head)
+
+	# Topi (Nepali flat cap) - short cylinder, white with a subtle dark band.
+	if wear_topi:
+		var topi_mat := StandardMaterial3D.new()
+		topi_mat.albedo_color = Color(0.93, 0.92, 0.88)  # off-white Dhaka cloth
+		topi_mat.roughness = 0.8
+		var topi := MeshInstance3D.new()
+		var topi_mesh := CylinderMesh.new()
+		topi_mesh.top_radius    = 0.14
+		topi_mesh.bottom_radius = 0.16
+		topi_mesh.height        = 0.10
+		topi_mesh.radial_segments = 10
+		topi.mesh = topi_mesh
+		topi.material_override = topi_mat
+		topi.position = Vector3(0.0, 1.70, 0.0)
+		_visual.add_child(topi)
 
 	var col := CollisionShape3D.new()
 	var shape := CapsuleShape3D.new()

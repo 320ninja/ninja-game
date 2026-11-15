@@ -13,14 +13,14 @@ const ROAD_WIDTH := 14.0  ## gap left between sidewalk slabs
 const GRID := 7           ## GRID x GRID blocks
 const SIDEWALK_HEIGHT := 0.16
 
-## Warm Jhapa-style brick / plaster / terracotta facade tones.
+## Kathmandu old-city palette: exposed brick, painted plaster, dark timber frames.
 const FACADE_TONES: Array[Color] = [
-	Color(0.82, 0.70, 0.52),  # warm concrete / plaster
-	Color(0.75, 0.60, 0.45),  # brick orange
-	Color(0.90, 0.85, 0.72),  # pale yellow plaster
-	Color(0.60, 0.55, 0.48),  # dusty grey-brown
-	Color(0.68, 0.45, 0.35),  # terracotta
-	Color(0.72, 0.68, 0.60),  # light stone
+	Color(0.68, 0.38, 0.28),  # classic Kathmandu red brick
+	Color(0.76, 0.45, 0.32),  # lighter brick / baked earth
+	Color(0.88, 0.80, 0.65),  # whitewashed / pale plaster
+	Color(0.55, 0.32, 0.22),  # dark terracotta
+	Color(0.80, 0.70, 0.55),  # sand-coloured plaster
+	Color(0.42, 0.35, 0.28),  # timber-frame grey-brown
 ]
 
 var _rng := RandomNumberGenerator.new()
@@ -99,7 +99,7 @@ func _build_block(gx: int, gz: int) -> void:
 	_add_box(
 		centre + Vector3(0.0, SIDEWALK_HEIGHT * 0.5, 0.0),
 		Vector3(inner, SIDEWALK_HEIGHT, inner),
-		_plain_material(Color(0.55, 0.52, 0.44), 0.9))  # dusty tan pavement
+		_plain_material(Color(0.50, 0.46, 0.40), 0.9))  # Kathmandu stone pavement
 
 	# The bazaar sits in the middle of the map, so buildings get a bit taller toward it.
 	var from_centre := Vector2(gx - (GRID - 1) * 0.5, gz - (GRID - 1) * 0.5).length()
@@ -112,18 +112,29 @@ func _build_block(gx: int, gz: int) -> void:
 			if _rng.randf() < 0.12:
 				continue  # leave the occasional empty lot
 
-			# Jhapa buildings are low: about 2-5 floors (floor height is 3.1-3.9 m).
-			var base_height := _rng.randf_range(6.5, 13.0)
-			var height := base_height + downtown * _rng.randf_range(0.0, 6.0)
-			var w := cell * _rng.randf_range(0.74, 0.95)
-			var d := cell * _rng.randf_range(0.74, 0.95)
+			# Kathmandu mix: mostly 2-5 floor brick, taller near Thamel/centre.
+			var base_height := _rng.randf_range(7.0, 16.0)
+			var height := base_height + downtown * _rng.randf_range(0.0, 10.0)
+			var w := cell * _rng.randf_range(0.70, 0.90)
+			var d := cell * _rng.randf_range(0.70, 0.90)
 			var px := centre.x - inner * 0.5 + pad + cell * 0.5 + bx * (cell + pad)
 			var pz := centre.z - inner * 0.5 + pad + cell * 0.5 + bz * (cell + pad)
 
+			var top_y := SIDEWALK_HEIGHT + height
 			_add_box(
 				Vector3(px, SIDEWALK_HEIGHT + height * 0.5, pz),
 				Vector3(w, height, d),
 				_facade_material(height))
+
+			# ~25 % chance of a pagoda-style roof: a dark overhanging cap on top.
+			if _rng.randf() < 0.25:
+				var roof_w := w * _rng.randf_range(1.08, 1.18)
+				var roof_d := d * _rng.randf_range(1.08, 1.18)
+				var roof_h := _rng.randf_range(0.6, 1.2)
+				_add_box(
+					Vector3(px, top_y + roof_h * 0.5, pz),
+					Vector3(roof_w, roof_h, roof_d),
+					_plain_material(Color(0.22, 0.16, 0.12), 0.8))  # dark timber overhang
 
 
 func _facade_material(height: float) -> ShaderMaterial:
