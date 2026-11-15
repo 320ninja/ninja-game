@@ -3,7 +3,7 @@ extends CanvasLayer
 ## prompt for getting in and out of cars, and the mission UI (money, timer,
 ## dialogue box, pass/fail banner). Missions talk to the HUD through the
 ## "hud" group, so they only need: show_dialogue, set_timer, hide_timer,
-## show_banner. Wanted stars follow WantedSystem on their own.
+## show_banner, show_progress, hide_progress. Wanted stars follow WantedSystem on their own.
 
 const DIALOGUE_SECONDS := 5.0
 const BANNER_SECONDS := 3.5
@@ -24,6 +24,8 @@ var _stars: WantedStars
 var _minimap: Node
 var _health_bar: ProgressBar
 var _ammo: Label
+var _progress: ProgressBar
+var _progress_label: Label
 var _player_health: Health
 var _weapons: WeaponManager
 var _radio_label: Label
@@ -107,6 +109,19 @@ func set_timer(seconds_left: float) -> void:
 
 func hide_timer() -> void:
 	_timer.visible = false
+
+
+## Action bar in the middle of the screen, ratio 0..1.
+func show_progress(text: String, ratio: float) -> void:
+	_progress_label.text = text
+	_progress.value = clampf(ratio, 0.0, 1.0) * 100.0
+	_progress.visible = true
+	_progress_label.visible = true
+
+
+func hide_progress() -> void:
+	_progress.visible = false
+	_progress_label.visible = false
 
 
 ## Big centred message, e.g. "Mission Complete!".
@@ -210,6 +225,31 @@ func _build_mission_ui() -> void:
 	_ammo.offset_top = -76.0
 	_ammo.offset_bottom = -28.0
 	_ammo.visible = false
+
+	_progress_label = _make_label(30, HORIZONTAL_ALIGNMENT_CENTER)
+	_progress_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	_progress_label.offset_left = -200.0
+	_progress_label.offset_right = 200.0
+	_progress_label.offset_top = 40.0
+	_progress_label.offset_bottom = 80.0
+	_progress_label.modulate = Color(1.0, 0.85, 0.3)
+	_progress_label.visible = false
+
+	_progress = ProgressBar.new()
+	_progress.show_percentage = false
+	_progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_progress.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	_progress.offset_left = -180.0
+	_progress.offset_right = 180.0
+	_progress.offset_top = 84.0
+	_progress.offset_bottom = 102.0
+	var bar_fill := StyleBoxFlat.new()
+	bar_fill.bg_color = Color(1.0, 0.8, 0.2)
+	bar_fill.set_corner_radius_all(4)
+	_progress.add_theme_stylebox_override("fill", bar_fill)
+	_progress.add_theme_stylebox_override("background", back)
+	_progress.visible = false
+	add_child(_progress)
 
 	_stars = WantedStars.new()
 	_stars.position = Vector2(28.0, 152.0)
