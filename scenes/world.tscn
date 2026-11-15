@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/props.gd" id="9_props"]
 [ext_resource type="Script" path="res://scripts/parked_cars.gd" id="10_parked"]
 [ext_resource type="Script" path="res://scripts/mission_01.gd" id="11_mission01"]
+[ext_resource type="Script" path="res://scripts/mission_02.gd" id="14_mission02"]
 [ext_resource type="Script" path="res://scripts/mission_trigger.gd" id="12_trigger"]
 [ext_resource type="PackedScene" path="res://assets/characters/UAL1_Standard.glb" id="13_npc"]
 [ext_resource type="Script" path="res://scripts/mountains.gd" id="14_mountains"]
@@ -112,6 +113,42 @@ script = ExtResource("12_trigger")
 radius = 3.0
 colour = Color(0.3, 1, 0.45, 1)
 label = "Tea Shop, Thamel"
+
+
+[node name="Mission02" type="Node3D" parent="."]
+script = ExtResource("14_mission02")
+mission_id = "mission_02"
+title = "Street Race"
+giver_name = "Bikash"
+intro_text = "Think you can drive? Race through the city to Durbar Square before the clock hits zero!"
+time_limit = 120.0
+reward = 750
+
+[node name="Giver" type="Area3D" parent="Mission02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 50)
+script = ExtResource("12_trigger")
+label = "Street Race"
+
+[node name="Check1" type="Area3D" parent="Mission02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 50)
+script = ExtResource("12_trigger")
+radius = 4.0
+colour = Color(0.3, 0.6, 1.0, 1)
+label = "Checkpoint 1"
+
+[node name="Check2" type="Area3D" parent="Mission02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, -100)
+script = ExtResource("12_trigger")
+radius = 4.0
+colour = Color(0.3, 0.6, 1.0, 1)
+label = "Checkpoint 2"
+
+[node name="Finish" type="Area3D" parent="Mission02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 0, -100)
+script = ExtResource("12_trigger")
+radius = 4.0
+colour = Color(0.3, 1.0, 0.45, 1)
+label = "Durbar Square - Finish!"
 
 [node name="FollowCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 3, 8)
