@@ -101,8 +101,17 @@ func _physics_process(delta: float) -> void:
 
 	_handle_recovery(delta)
 
-	if Input.is_key_pressed(KEY_R):
+	if Input.is_key_pressed(KEY_R) and Input.is_key_pressed(KEY_CTRL):
 		respawn()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not active:
+		return
+	if event is InputEventKey and event.pressed and not event.echo \
+			and event.keycode == KEY_R and not Input.is_key_pressed(KEY_CTRL):
+		if has_node("/root/Radio"):
+			get_node("/root/Radio").next_station()
 
 
 func get_speed_kmh() -> float:

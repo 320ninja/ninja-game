@@ -26,6 +26,9 @@ var _health_bar: ProgressBar
 var _ammo: Label
 var _player_health: Health
 var _weapons: WeaponManager
+var _radio_label: Label
+var _radio_left := 0.0
+const RADIO_SHOW := 2.5
 
 
 func _ready() -> void:
@@ -35,6 +38,8 @@ func _ready() -> void:
 	_minimap = load("res://scripts/minimap.gd").new()
 	add_child(_minimap)
 	Wallet.money_changed.connect(_on_money_changed)
+	if has_node("/root/Radio"):
+		get_node("/root/Radio").station_changed.connect(_on_station_changed)
 	_on_money_changed(Wallet.money)
 	WantedSystem.wanted_changed.connect(_stars.set_level)
 	_stars.set_level(WantedSystem.level)
@@ -113,6 +118,20 @@ func show_banner(text: String, colour: Color = Color.WHITE) -> void:
 	_dialogue.visible = false
 
 
+func _on_station_changed(name: String) -> void:
+	if _radio_label == null:
+		_radio_label = _make_label(22, HORIZONTAL_ALIGNMENT_LEFT)
+		_radio_label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+		_radio_label.offset_left = 180.0
+		_radio_label.offset_right = 480.0
+		_radio_label.offset_top = -32.0
+		_radio_label.offset_bottom = -4.0
+		_radio_label.modulate = Color(0.6, 0.85, 1.0)
+	_radio_label.text = "♫  " + name
+	_radio_label.visible = true
+	_radio_left = RADIO_SHOW
+
+
 func _tick_popups(delta: float) -> void:
 	if _dialogue.visible:
 		_dialogue_left -= delta
@@ -122,6 +141,10 @@ func _tick_popups(delta: float) -> void:
 		_banner_left -= delta
 		if _banner_left <= 0.0:
 			_banner.visible = false
+	if _radio_label != null and _radio_label.visible:
+		_radio_left -= delta
+		if _radio_left <= 0.0:
+			_radio_label.visible = false
 
 
 func _on_busted(fine: int) -> void:
