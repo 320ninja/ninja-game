@@ -237,7 +237,7 @@ func _build_mission_ui() -> void:
 	bar_fill.bg_color = Color(1.0, 0.8, 0.2)
 	bar_fill.set_corner_radius_all(4)
 	_progress.add_theme_stylebox_override("fill", bar_fill)
-	_progress.add_theme_stylebox_override("background", back)
+	_progress.add_theme_stylebox_override("background", _health_bar.get_theme_stylebox("background"))
 	_progress.visible = false
 	add_child(_progress)
 

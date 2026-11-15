@@ -39,7 +39,7 @@ func _ready() -> void:
 	_anim.play("Idle")
 	_dress()
 	health.died.connect(_on_died)
-	var fs := load("res://scripts/footsteps.gd").new()
+	var fs: Node = load("res://scripts/footsteps.gd").new()
 	add_child(fs)
 
 
