@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -10,6 +10,9 @@
 [ext_resource type="Script" path="res://scripts/peds.gd" id="8_peds"]
 [ext_resource type="Script" path="res://scripts/props.gd" id="9_props"]
 [ext_resource type="Script" path="res://scripts/parked_cars.gd" id="10_parked"]
+[ext_resource type="Script" path="res://scripts/mission_01.gd" id="11_mission01"]
+[ext_resource type="Script" path="res://scripts/mission_trigger.gd" id="12_trigger"]
+[ext_resource type="PackedScene" path="res://assets/characters/UAL1_Standard.glb" id="13_npc"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.48, 0.72, 1)
@@ -70,6 +73,30 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 1.0, 0)
 
 [node name="Player" parent="." instance=ExtResource("5_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0.2, 2)
+
+[node name="Mission01" type="Node3D" parent="."]
+script = ExtResource("11_mission01")
+mission_id = "mission_01"
+title = "First Job"
+giver_name = "Ram Dai"
+intro_text = "Deliver this package to the tea shop in Thamel. You have 3 minutes."
+time_limit = 180.0
+reward = 500
+
+[node name="Giver" type="Area3D" parent="Mission01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.5, 0, 9)
+script = ExtResource("12_trigger")
+label = "First Job"
+
+[node name="NPC" parent="Mission01" instance=ExtResource("13_npc")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31.2, 0.16, 9)
+
+[node name="Delivery" type="Area3D" parent="Mission01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -117, 0, -126)
+script = ExtResource("12_trigger")
+radius = 3.0
+colour = Color(0.3, 1, 0.45, 1)
+label = "Tea Shop, Thamel"
 
 [node name="FollowCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 3, 8)
