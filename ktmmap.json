@@ -2,5 +2,17 @@
   "game_name": "Ninja",
   "city_name": "Kathmandu",
   "primary_color": "#c0392b",
-  "currency_symbol": "रु"
+  "currency_symbol": "रु",
+  "police": {
+    "cooldown_base": 10,
+    "cooldown_per_star": 4,
+    "bust_fine": 500,
+    "sight_radius": 35,
+    "run_speed": 7.5,
+    "spawn_per_star": 2,
+    "max_officers": 10,
+    "ambient_patrols": 2,
+    "despawn_distance": 150,
+    "backup_size": 2
+  }
 }

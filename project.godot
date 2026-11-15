@@ -14,6 +14,7 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 
 DevCapture="*res://scripts/dev_capture.gd"
 Wallet="*res://scripts/wallet.gd"
+WantedSystem="*res://scripts/wanted.gd"
 
 [display]
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://assets/characters/UAL1_Standard.glb" id="13_npc"]
 [ext_resource type="Script" path="res://scripts/mountains.gd" id="14_mountains"]
 [ext_resource type="Script" path="res://scripts/microbus.gd" id="15_microbus"]
+[ext_resource type="Script" path="res://scripts/police_spawner.gd" id="17_police"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.48, 0.72, 1)
@@ -210,6 +211,9 @@ script = ExtResource("12_trigger")
 radius = 4.0
 colour = Color(0.3, 1.0, 0.45, 1)
 label = "Safe House"
+
+[node name="PoliceSpawner" type="Node3D" parent="."]
+script = ExtResource("17_police")
 
 [node name="FollowCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 3, 8)

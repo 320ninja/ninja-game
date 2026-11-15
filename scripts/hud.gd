@@ -3,7 +3,7 @@ extends CanvasLayer
 ## prompt for getting in and out of cars, and the mission UI (money, timer,
 ## dialogue box, pass/fail banner). Missions talk to the HUD through the
 ## "hud" group, so they only need: show_dialogue, set_timer, hide_timer,
-## show_banner.
+## show_banner. Wanted stars follow WantedSystem on their own.
 
 const DIALOGUE_SECONDS := 5.0
 const BANNER_SECONDS := 3.5
@@ -20,6 +20,7 @@ var _dialogue_text: RichTextLabel
 var _banner: Label
 var _dialogue_left := 0.0
 var _banner_left := 0.0
+var _stars: WantedStars
 
 
 func _ready() -> void:
@@ -28,6 +29,9 @@ func _ready() -> void:
 	_build_mission_ui()
 	Wallet.money_changed.connect(_on_money_changed)
 	_on_money_changed(Wallet.money)
+	WantedSystem.wanted_changed.connect(_stars.set_level)
+	_stars.set_level(WantedSystem.level)
+	WantedSystem.busted.connect(_on_busted)
 
 
 func _process(delta: float) -> void:
@@ -100,6 +104,13 @@ func _tick_popups(delta: float) -> void:
 			_banner.visible = false
 
 
+func _on_busted(fine: int) -> void:
+	var text := "BUSTED"
+	if fine > 0:
+		text += "\n-" + Wallet.format(fine)
+	show_banner(text, Color(0.45, 0.65, 1.0))
+
+
 func _on_money_changed(amount: int) -> void:
 	_money.text = Wallet.format(amount)
 
@@ -129,6 +140,10 @@ func _build_mission_ui() -> void:
 	_banner.offset_top = -140.0
 	_banner.offset_bottom = 20.0
 	_banner.visible = false
+
+	_stars = WantedStars.new()
+	_stars.position = Vector2(28.0, 152.0)
+	add_child(_stars)
 
 	_dialogue = PanelContainer.new()
 	var style := StyleBoxFlat.new()
@@ -162,3 +177,50 @@ func _make_label(size: int, align: HorizontalAlignment) -> Label:
 	label.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(label)
 	return label
+
+
+## Five drawn stars (polygons, so no font glyph needed). Filled = wanted level.
+## Blinks while the police have lost sight and the level is cooling off.
+class WantedStars extends Control:
+	const COUNT := 5
+	const SIZE := 34.0
+	const GAP := 6.0
+	const FILL := Color(1.0, 0.82, 0.2)
+	const EMPTY := Color(0.1, 0.1, 0.12, 0.55)
+	const OUTLINE := Color(0, 0, 0, 0.8)
+
+	var level := 0
+	var _blink := 0.0
+
+	func _init() -> void:
+		size = Vector2(COUNT * (SIZE + GAP), SIZE)
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		visible = false
+
+	func set_level(value: int) -> void:
+		level = value
+		visible = level > 0
+		queue_redraw()
+
+	func _process(delta: float) -> void:
+		if level == 0:
+			return
+		_blink += delta
+		var dim := not WantedSystem.is_seen() and fmod(_blink, 0.8) > 0.4
+		modulate.a = 0.45 if dim else 1.0
+
+	func _draw() -> void:
+		for i in COUNT:
+			var centre := Vector2(i * (SIZE + GAP) + SIZE * 0.5, SIZE * 0.5)
+			var points := _star(centre, SIZE * 0.5, SIZE * 0.22)
+			draw_colored_polygon(points, FILL if i < level else EMPTY)
+			points.append(points[0])
+			draw_polyline(points, OUTLINE, 2.0, true)
+
+	func _star(centre: Vector2, outer: float, inner: float) -> PackedVector2Array:
+		var points := PackedVector2Array()
+		for k in 10:
+			var r := outer if k % 2 == 0 else inner
+			var a := -PI * 0.5 + k * PI / 5.0
+			points.append(centre + Vector2(cos(a), sin(a)) * r)
+		return points
