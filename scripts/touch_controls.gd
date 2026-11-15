@@ -129,8 +129,7 @@ class _TouchBtn extends Control:
 
 	func _input(ev: InputEvent) -> void:
 		if ev is InputEventScreenTouch:
-			var local := to_local(ev.position)
-			if ev.pressed and _touch < 0 and get_rect().has_point(local):
+			if ev.pressed and _touch < 0 and get_global_rect().has_point(ev.position):
 				_touch = ev.index
 				_bg.color = Color(1, 1, 1, 0.5)
 				_ctrl.fire(_key, true)
