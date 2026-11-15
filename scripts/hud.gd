@@ -23,6 +23,7 @@ var _banner_left := 0.0
 var _stars: WantedStars
 var _minimap: Node
 var _health_bar: ProgressBar
+var _car_bar: ProgressBar
 var _ammo: Label
 var _progress: ProgressBar
 var _progress_label: Label
@@ -81,6 +82,10 @@ func _update_combat() -> void:
 		_weapons = get_tree().get_first_node_in_group("weapon_manager")
 	if _player_health != null:
 		_health_bar.value = _player_health.current_hp / _player_health.max_hp * 100.0
+	var car_health: VehicleHealth = VehicleHealth.of(_game.driving) if _game != null else null
+	_car_bar.visible = car_health != null
+	if car_health != null:
+		_car_bar.value = car_health.current_hp / car_health.max_hp * 100.0
 	var weapon: Weapon = _weapons.current if _weapons != null else null
 	_ammo.visible = weapon != null
 	if weapon != null:
@@ -199,24 +204,9 @@ func _build_mission_ui() -> void:
 	_banner.offset_bottom = 20.0
 	_banner.visible = false
 
-	_health_bar = ProgressBar.new()
-	_health_bar.show_percentage = false
-	_health_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_health_bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	_health_bar.offset_left = 0.0
-	_health_bar.offset_right = 150.0
-	_health_bar.offset_top = -206.0
-	_health_bar.offset_bottom = -190.0
-	var fill := StyleBoxFlat.new()
-	fill.bg_color = Color(0.85, 0.12, 0.12)
-	fill.set_corner_radius_all(4)
-	var back := StyleBoxFlat.new()
-	back.bg_color = Color(0.05, 0.05, 0.07, 0.75)
-	back.set_corner_radius_all(4)
-	_health_bar.add_theme_stylebox_override("fill", fill)
-	_health_bar.add_theme_stylebox_override("background", back)
-	_health_bar.value = 100.0
-	add_child(_health_bar)
+	_health_bar = _make_bar(Color(0.85, 0.12, 0.12), -206.0, 16.0)
+	_car_bar = _make_bar(Color(0.95, 0.6, 0.15), -222.0, 10.0)
+	_car_bar.visible = false
 
 	_ammo = _make_label(32, HORIZONTAL_ALIGNMENT_RIGHT)
 	_ammo.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -276,6 +266,28 @@ func _build_mission_ui() -> void:
 	_dialogue_text.add_theme_font_size_override("normal_font_size", 24)
 	_dialogue_text.add_theme_font_size_override("bold_font_size", 24)
 	_dialogue.add_child(_dialogue_text)
+
+
+func _make_bar(colour: Color, top: float, height: float) -> ProgressBar:
+	var bar := ProgressBar.new()
+	bar.show_percentage = false
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	bar.offset_left = 0.0
+	bar.offset_right = 150.0
+	bar.offset_top = top
+	bar.offset_bottom = top + height
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = colour
+	fill.set_corner_radius_all(4)
+	var back := StyleBoxFlat.new()
+	back.bg_color = Color(0.05, 0.05, 0.07, 0.75)
+	back.set_corner_radius_all(4)
+	bar.add_theme_stylebox_override("fill", fill)
+	bar.add_theme_stylebox_override("background", back)
+	bar.value = 100.0
+	add_child(bar)
+	return bar
 
 
 func _make_label(size: int, align: HorizontalAlignment) -> Label:

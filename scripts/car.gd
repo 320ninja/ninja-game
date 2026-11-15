@@ -35,6 +35,7 @@ const FORWARD := -1.0
 var boosting := false
 ## Set by game.gd when the player gets in. Parked cars ignore input.
 var active := false
+var wrecked := false
 
 var _spawn_transform: Transform3D
 var _upside_down_for := 0.0
@@ -47,6 +48,7 @@ var _upside_down_for := 0.0
 func _ready() -> void:
 	add_to_group("vehicle")
 	_spawn_transform = global_transform
+	VehicleHealth.attach(self, Vector3(0.0, 0.6, -1.6), Vector3(-0.97, 0.45, -0.6))
 	var body := get_node_or_null("Body") as MeshInstance3D
 	if body and body.material_override is StandardMaterial3D:
 		var mat: StandardMaterial3D = body.material_override.duplicate()
@@ -55,6 +57,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if wrecked:
+		engine_force = 0.0
+		brake = max_brake_force
+		return
 	if not active:
 		engine_force = 0.0
 		brake = coast_brake
@@ -112,6 +118,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			and event.keycode == KEY_R and not Input.is_key_pressed(KEY_CTRL):
 		if has_node("/root/Radio"):
 			get_node("/root/Radio").next_station()
+
+
+func on_destroyed() -> void:
+	wrecked = true
+	active = false
+	get_tree().create_timer(2.5).timeout.connect(func() -> void:
+		freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+		freeze = true)
 
 
 func get_speed_kmh() -> float:

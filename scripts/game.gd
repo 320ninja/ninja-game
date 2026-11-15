@@ -53,6 +53,9 @@ func enter_nearest_vehicle() -> void:
 
 	driving = vehicle
 	vehicle.active = true
+	var vh := VehicleHealth.of(vehicle)
+	if vh:
+		vh.destroyed.connect(exit_vehicle, CONNECT_ONE_SHOT)
 	_set_player_present(false)
 	active_changed.emit(vehicle)
 
@@ -66,6 +69,9 @@ func exit_vehicle() -> void:
 	player.global_position = driving.global_position - side * 2.2 + Vector3.UP * 0.4
 	player.velocity = Vector3.ZERO
 
+	var vh := VehicleHealth.of(driving)
+	if vh and vh.destroyed.is_connected(exit_vehicle):
+		vh.destroyed.disconnect(exit_vehicle)
 	driving.active = false
 	if driving is VehicleBody3D:
 		driving.engine_force = 0.0

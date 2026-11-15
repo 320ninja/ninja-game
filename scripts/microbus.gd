@@ -6,6 +6,7 @@ extends VehicleBody3D
 @export var body_color := Color(0.15, 0.55, 0.85)  ## Sajha blue
 
 var active := false
+var wrecked := false
 var boosting := false
 var _steer := 0.0
 
@@ -21,10 +22,11 @@ func _ready() -> void:
 	mass = 2200.0
 	_build_body()
 	_add_wheels()
+	VehicleHealth.attach(self, Vector3(0.0, 1.6, 2.6), Vector3(-1.22, 1.4, 2.2))
 
 
 func _physics_process(delta: float) -> void:
-	if not active:
+	if not active or wrecked:
 		engine_force = 0.0
 		brake         = 2.0
 		return
@@ -55,6 +57,15 @@ func _physics_process(delta: float) -> void:
 		var force := ENGINE_FORCE * (1.6 if boosting else 1.0)
 		engine_force = force * throttle * clampf(1.0 - speed / MAX_SPEED, 0.0, 1.0)
 		brake = 0.0
+
+
+func on_destroyed() -> void:
+	wrecked = true
+	active = false
+	brake = BRAKE_FORCE
+	get_tree().create_timer(2.5).timeout.connect(func() -> void:
+		freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+		freeze = true)
 
 
 func get_speed_kmh() -> float:

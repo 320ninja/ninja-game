@@ -20,6 +20,7 @@ func _ready() -> void:
 	add_to_group("police_car")
 	_apply_config()
 	_build_visual()
+	VehicleHealth.attach(self, Vector3(0.0, 0.9, 1.6), Vector3(-1.02, 0.55, 0.7))
 	if _game == null:
 		_game = get_tree().get_first_node_in_group("game")
 
@@ -64,6 +65,13 @@ func _physics_process(delta: float) -> void:
 		WantedSystem.report_seen()
 
 	move_and_slide()
+
+
+func on_destroyed() -> void:
+	remove_from_group("police_car")
+	velocity = Vector3.ZERO
+	set_physics_process(false)
+	get_tree().create_timer(30.0).timeout.connect(queue_free)
 
 
 func get_speed_kmh() -> float:

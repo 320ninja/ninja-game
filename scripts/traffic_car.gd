@@ -27,6 +27,7 @@ func _ready() -> void:
 	max_contacts_reported = 4
 	body_entered.connect(_on_body_entered)
 	_build_visual()
+	VehicleHealth.attach(self, Vector3(0.0, 1.0, 2.0 if is_truck else 1.4), Vector3(-0.92, 0.75, 1.0))
 	refresh_waypoint()
 	# Ramps sit on roads on purpose; braking for them would jam the lane.
 	for ramp in get_tree().get_nodes_in_group("ramp"):
@@ -77,6 +78,11 @@ func _on_body_entered(body: Node) -> void:
 	if body is VehicleBody3D:
 		_stunned = 2.5
 		_speed = 0.0
+
+
+func on_destroyed() -> void:
+	_wrecked = true
+	_stunned = 0.0
 
 
 func _recover() -> void:
