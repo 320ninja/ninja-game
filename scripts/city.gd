@@ -13,14 +13,14 @@ const ROAD_WIDTH := 14.0  ## gap left between sidewalk slabs
 const GRID := 7           ## GRID x GRID blocks
 const SIDEWALK_HEIGHT := 0.16
 
-## Concrete / brick / glass-tower facade tones.
+## Warm Jhapa-style brick / plaster / terracotta facade tones.
 const FACADE_TONES: Array[Color] = [
-	Color(0.52, 0.50, 0.47),
-	Color(0.44, 0.41, 0.39),
-	Color(0.58, 0.46, 0.38),
-	Color(0.36, 0.38, 0.42),
-	Color(0.62, 0.60, 0.55),
-	Color(0.30, 0.33, 0.36),
+	Color(0.82, 0.70, 0.52),  # warm concrete / plaster
+	Color(0.75, 0.60, 0.45),  # brick orange
+	Color(0.90, 0.85, 0.72),  # pale yellow plaster
+	Color(0.60, 0.55, 0.48),  # dusty grey-brown
+	Color(0.68, 0.45, 0.35),  # terracotta
+	Color(0.72, 0.68, 0.60),  # light stone
 ]
 
 var _rng := RandomNumberGenerator.new()
@@ -99,9 +99,9 @@ func _build_block(gx: int, gz: int) -> void:
 	_add_box(
 		centre + Vector3(0.0, SIDEWALK_HEIGHT * 0.5, 0.0),
 		Vector3(inner, SIDEWALK_HEIGHT, inner),
-		_plain_material(Color(0.38, 0.38, 0.40), 0.9))
+		_plain_material(Color(0.55, 0.52, 0.44), 0.9))  # dusty tan pavement
 
-	# Downtown sits in the middle of the map, so towers get taller toward it.
+	# The bazaar sits in the middle of the map, so buildings get a bit taller toward it.
 	var from_centre := Vector2(gx - (GRID - 1) * 0.5, gz - (GRID - 1) * 0.5).length()
 	var downtown := clampf(1.0 - from_centre / (GRID * 0.6), 0.0, 1.0)
 
@@ -112,8 +112,9 @@ func _build_block(gx: int, gz: int) -> void:
 			if _rng.randf() < 0.12:
 				continue  # leave the occasional empty lot
 
-			var base_height := _rng.randf_range(10.0, 30.0)
-			var height := base_height + downtown * _rng.randf_range(20.0, 70.0)
+			# Jhapa buildings are low: about 2-5 floors (floor height is 3.1-3.9 m).
+			var base_height := _rng.randf_range(6.5, 13.0)
+			var height := base_height + downtown * _rng.randf_range(0.0, 6.0)
 			var w := cell * _rng.randf_range(0.74, 0.95)
 			var d := cell * _rng.randf_range(0.74, 0.95)
 			var px := centre.x - inner * 0.5 + pad + cell * 0.5 + bx * (cell + pad)
