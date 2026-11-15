@@ -3,6 +3,25 @@
   "city_name": "Kathmandu",
   "primary_color": "#c0392b",
   "currency_symbol": "रु",
+  "map": {
+    "scale_note": "1 game unit ≈ 10 real metres. Centre: Ratna Park (~27.708°N 85.317°E).",
+    "extent": 390,
+    "chowks": {
+      "Thamel":        { "x": -160, "z":  -88 },
+      "Ason":          { "x": -140, "z":    8 },
+      "Indrachowk":    { "x": -160, "z":   28 },
+      "Basantapur":    { "x": -195, "z":   52 },
+      "NewRoad":       { "x": -140, "z":   52 },
+      "RatnaPark":     { "x":  -88, "z":   16 },
+      "Dharahara":     { "x":  -80, "z":   52 },
+      "Swayambhu":     { "x": -338, "z":  -40 },
+      "Gongabu":       { "x":  -88, "z": -278 },
+      "Pashupatinath": { "x":  220, "z":    0 },
+      "Boudhanath":    { "x":  362, "z": -122 },
+      "Baneshwor":     { "x":  110, "z":  195 },
+      "Koteshwor":     { "x":  236, "z":  298 }
+    }
+  },
   "police": {
     "cooldown_base": 10,
     "cooldown_per_star": 4,
