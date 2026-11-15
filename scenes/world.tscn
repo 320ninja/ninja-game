@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="2_city"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/mission_01.gd" id="11_mission01"]
 [ext_resource type="Script" path="res://scripts/mission_02.gd" id="14_mission02"]
 [ext_resource type="Script" path="res://scripts/mission_03.gd" id="15_mission03"]
+[ext_resource type="Script" path="res://scripts/mission_04.gd" id="16_mission04"]
 [ext_resource type="Script" path="res://scripts/mission_trigger.gd" id="12_trigger"]
 [ext_resource type="PackedScene" path="res://assets/characters/UAL1_Standard.glb" id="13_npc"]
 [ext_resource type="Script" path="res://scripts/mountains.gd" id="14_mountains"]
@@ -179,6 +180,36 @@ script = ExtResource("12_trigger")
 radius = 3.0
 colour = Color(0.3, 1.0, 0.45, 1)
 label = "New Road - Drop Off"
+
+
+[node name="Mission04" type="Node3D" parent="."]
+script = ExtResource("16_mission04")
+mission_id = "mission_04"
+title = "Hot Pursuit"
+giver_name = "Rajan"
+intro_text = "Rob the shop at Ason, then get to the safe house before the cops arrive."
+time_limit = 999.0
+escape_time = 60.0
+reward = 1000
+
+[node name="Giver" type="Area3D" parent="Mission04"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -50)
+script = ExtResource("12_trigger")
+label = "Hot Pursuit"
+
+[node name="RobZone" type="Area3D" parent="Mission04"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0, 50)
+script = ExtResource("12_trigger")
+radius = 3.0
+colour = Color(1.0, 0.2, 0.2, 1)
+label = "Rob - Ason Shop"
+
+[node name="SafeHouse" type="Area3D" parent="Mission04"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -130)
+script = ExtResource("12_trigger")
+radius = 4.0
+colour = Color(0.3, 1.0, 0.45, 1)
+label = "Safe House"
 
 [node name="FollowCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 3, 8)
