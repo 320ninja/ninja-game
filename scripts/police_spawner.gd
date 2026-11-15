@@ -21,10 +21,13 @@ var max_officers := 10
 var ambient_patrols := 2
 var despawn_distance := 150.0
 var backup_size := 2
+var max_police_cars := 2
+var car_min_level := 3
 
 ## Interior road centrelines (same as traffic.gd).
 var _lines: Array[float] = []
 var _check_left := 0.0
+var _car_check_left := 0.0
 var _game: Node
 
 
@@ -39,16 +42,18 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_check_left -= delta
-	if _check_left > 0.0:
-		return
-	_check_left = CHECK_INTERVAL
+	_car_check_left -= delta
 	var centre: Variant = _player_position()
 	if centre == null:
 		return
-	_despawn_far(centre)
-	# One at a time so a squad trickles in rather than popping in at once.
-	if officer_count() < _target_count():
-		_spawn_near(centre, SPAWN_MIN, SPAWN_MAX)
+	if _check_left <= 0.0:
+		_check_left = CHECK_INTERVAL
+		_despawn_far(centre)
+		if officer_count() < _target_count():
+			_spawn_near(centre, SPAWN_MIN, SPAWN_MAX)
+	if _car_check_left <= 0.0:
+		_car_check_left = CHECK_INTERVAL * 2.0
+		_tick_police_cars(centre)
 
 
 func officer_count() -> int:
@@ -131,6 +136,28 @@ func _player_position() -> Variant:
 	return _game.get_active().global_position
 
 
+func _tick_police_cars(centre: Vector3) -> void:
+	var cars := get_tree().get_nodes_in_group("police_car")
+	# Despawn far cars
+	for car in cars:
+		if car.global_position.distance_to(centre) > despawn_distance:
+			car.queue_free()
+	# Spawn if needed
+	var alive := get_tree().get_nodes_in_group("police_car").size()
+	var target := max_police_cars if WantedSystem.level >= car_min_level else 0
+	if alive < target:
+		_spawn_police_car(centre)
+
+
+func _spawn_police_car(centre: Vector3) -> void:
+	var car := PoliceCar.new()
+	var angle := randf() * TAU
+	var dist := randf_range(SPAWN_MIN, SPAWN_MAX)
+	car.position = centre + Vector3(cos(angle), 0.5, sin(angle)) * dist
+	car.rotation.y = randf() * TAU
+	get_parent().add_child(car)
+
+
 func _apply_config() -> void:
 	var police: Dictionary = WantedSystem.load_police_config()
 	spawn_per_star = int(police.get("spawn_per_star", spawn_per_star))
@@ -138,3 +165,5 @@ func _apply_config() -> void:
 	ambient_patrols = int(police.get("ambient_patrols", ambient_patrols))
 	despawn_distance = float(police.get("despawn_distance", despawn_distance))
 	backup_size = int(police.get("backup_size", backup_size))
+	max_police_cars = int(police.get("max_police_cars", max_police_cars))
+	car_min_level = int(police.get("car_min_level", car_min_level))

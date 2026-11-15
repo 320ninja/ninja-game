@@ -21,12 +21,15 @@ var _banner: Label
 var _dialogue_left := 0.0
 var _banner_left := 0.0
 var _stars: WantedStars
+var _minimap: Node
 
 
 func _ready() -> void:
 	add_to_group("hud")
 	_game = get_tree().get_first_node_in_group("game")
 	_build_mission_ui()
+	_minimap = load("res://scripts/minimap.gd").new()
+	add_child(_minimap)
 	Wallet.money_changed.connect(_on_money_changed)
 	_on_money_changed(Wallet.money)
 	WantedSystem.wanted_changed.connect(_stars.set_level)

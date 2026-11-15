@@ -13,6 +13,8 @@
     "max_officers": 10,
     "ambient_patrols": 2,
     "despawn_distance": 150,
-    "backup_size": 2
+    "backup_size": 2,
+    "max_police_cars": 2,
+    "car_min_level": 3
   }
 }
