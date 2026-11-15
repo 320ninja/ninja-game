@@ -12,14 +12,14 @@ const EXTENT := 390.0
 
 const SIDEWALK_H := 0.16
 
-## Newari colour palette.
+## Newari colour palette — rich brick, terracotta, ochre; NO cool whites/greys.
 const FACADE_TONES: Array[Color] = [
-	Color(0.68, 0.38, 0.28),  # classic red brick
-	Color(0.76, 0.45, 0.32),  # lighter brick
-	Color(0.88, 0.80, 0.65),  # whitewashed plaster
-	Color(0.55, 0.32, 0.22),  # dark terracotta
-	Color(0.80, 0.70, 0.55),  # sand plaster
-	Color(0.60, 0.42, 0.30),  # ochre-brown
+	Color(0.60, 0.26, 0.14),  # deep Newari red brick
+	Color(0.68, 0.32, 0.18),  # classic red brick
+	Color(0.72, 0.38, 0.22),  # mid brick
+	Color(0.52, 0.22, 0.12),  # dark terracotta
+	Color(0.76, 0.48, 0.28),  # warm ochre-brick
+	Color(0.64, 0.44, 0.24),  # ochre-brown plaster
 ]
 const TIMBER := Color(0.20, 0.13, 0.09)
 const GOLD   := Color(0.76, 0.62, 0.18)
@@ -114,22 +114,22 @@ const ROADS: Array = [
 	[ 110,  195,  110,  110,   8, 2],
 	[ 110,  110,  220,  110,   8, 2],
 
-	# ═══ THAMEL LANES ═════════════════════════════════════════════════════════
+	# ═══ THAMEL LANES — deliberately tight alleys (3–4 m) ══════════════════
 	# dense grid in the Thamel quadrant  (x: -220 → -80, z: -120 → -44)
-	[-220, -120, -220,  -44,   5, 4],
-	[-200, -120, -200,  -44,   5, 4],
-	[-180, -120, -180,  -44,   5, 4],
-	[-160, -120, -160,  -88,   6, 3],
-	[-140, -120, -140,  -44,   5, 4],
-	[-120, -120, -120,  -44,   5, 4],
-	[-100, -120, -100,  -44,   5, 4],
+	[-220, -120, -220,  -44,   3, 4],
+	[-200, -120, -200,  -44,   3, 4],
+	[-180, -120, -180,  -44,   4, 4],
+	[-160, -120, -160,  -88,   4, 3],
+	[-140, -120, -140,  -44,   3, 4],
+	[-120, -120, -120,  -44,   3, 4],
+	[-100, -120, -100,  -44,   4, 4],
 
-	[-220, -120, -100, -120,   5, 4],
-	[-220, -106, -100, -106,   5, 4],
-	[-220,  -92, -100,  -92,   5, 4],
-	[-220,  -78, -100,  -78,   5, 4],
-	[-220,  -64, -100,  -64,   5, 4],
-	[-220,  -44, -100,  -44,   5, 4],
+	[-220, -120, -100, -120,   3, 4],
+	[-220, -106, -100, -106,   3, 4],
+	[-220,  -92, -100,  -92,   4, 4],
+	[-220,  -78, -100,  -78,   3, 4],
+	[-220,  -64, -100,  -64,   3, 4],
+	[-220,  -44, -100,  -44,   4, 4],
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -326,30 +326,41 @@ func _near_road(px: float, pz: float, threshold: float) -> bool:
 
 
 func _place_building(cx: float, cz: float, district: String) -> void:
-	var w := _rng.randf_range(6.0, 15.0)
-	var d := _rng.randf_range(6.0, 15.0)
+	var w := _rng.randf_range(6.0, 14.0)
+	var d := _rng.randf_range(6.0, 14.0)
 	var h: float
 	match district:
 		"Thamel", "NewRoad", "Ason", "Indrachowk":
-			h = _rng.randf_range(8.0, 20.0)   # medium-rise commercial
+			h = _rng.randf_range(8.0, 18.0)
 		"Baneshwor", "Koteshwor":
-			h = _rng.randf_range(14.0, 30.0)  # modern taller blocks
+			h = _rng.randf_range(14.0, 28.0)
 		"Gongabu":
-			h = _rng.randf_range(4.0, 10.0)   # low warehouses/shops
+			h = _rng.randf_range(4.0, 9.0)
 		_:
-			h = _rng.randf_range(6.0, 16.0)
+			h = _rng.randf_range(6.0, 15.0)
 
 	_box(Vector3(cx, SIDEWALK_H + h * 0.5, cz), Vector3(w, h, d), _facade(h))
-	# Timber overhang — common in old-city districts
-	var is_old_city := district in ["Thamel","Ason","Indrachowk","Basantapur","Pashupatinath","Boudhanath"]
-	if is_old_city and _rng.randf() < 0.65:
-		_box(Vector3(cx, SIDEWALK_H + h + _rng.randf_range(0.4, 0.9), cz),
-			Vector3(w * _rng.randf_range(1.08, 1.22), _rng.randf_range(0.5, 1.0), d * _rng.randf_range(1.08, 1.22)),
-			_plain(TIMBER, 0.85))
-	# Double-eave (pagoda feel) on taller old-city buildings
-	if is_old_city and h > 10.0 and _rng.randf() < 0.30:
-		_box(Vector3(cx, SIDEWALK_H + h * 0.55, cz),
-			Vector3(w * 1.12, 0.40, d * 1.12), _plain(TIMBER, 0.85))
+
+	var is_old_city := district in ["Thamel","Ason","Indrachowk","Basantapur",
+		"Pashupatinath","Boudhanath","NewRoad","RatnaPark"]
+
+	if is_old_city:
+		# Top eave — ALWAYS on old-city buildings
+		var ew := w * _rng.randf_range(1.10, 1.26)
+		var ed := d * _rng.randf_range(1.10, 1.26)
+		var eh := _rng.randf_range(0.5, 1.1)
+		_box(Vector3(cx, SIDEWALK_H + h + eh * 0.5, cz),
+			Vector3(ew, eh, ed), _plain(TIMBER, 0.88))
+
+		# Mid-floor eave (pagoda feel) — 60 % of taller buildings
+		if h > 9.0 and _rng.randf() < 0.60:
+			_box(Vector3(cx, SIDEWALK_H + h * 0.56, cz),
+				Vector3(w * 1.14, 0.45, d * 1.14), _plain(TIMBER, 0.88))
+
+		# Second mid-eave — 25 % of very tall buildings (3-tier pagoda)
+		if h > 14.0 and _rng.randf() < 0.25:
+			_box(Vector3(cx, SIDEWALK_H + h * 0.80, cz),
+				Vector3(w * 1.07, 0.38, d * 1.07), _plain(TIMBER, 0.88))
 
 
 # ── Landmarks ────────────────────────────────────────────────────────────────
