@@ -20,7 +20,7 @@ const PUNCH_DAMAGE := 8.0
 var _punch_cooldown := 0.0
 
 @onready var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 14.0)
-@onready var _anim: AnimationPlayer = $Model/AnimationPlayer
+@onready var _anim: AnimationPlayer = _find_anim_player()
 @onready var health: Health = $Health
 @onready var weapons: WeaponManager = $WeaponManager
 
@@ -29,14 +29,22 @@ const LOOPED_ANIMS := ["Idle", "Walk", "Jog_Fwd", "Sprint", "Pistol_Idle"]
 const ONE_SHOTS := ["Punch", "Pistol_Shoot", "Pistol_Reload"]
 
 
+func _find_anim_player() -> AnimationPlayer:
+	var ap := find_child("AnimationPlayer", true, false) as AnimationPlayer
+	return ap
+
 func _ready() -> void:
 	add_to_group("player")
-	for name in LOOPED_ANIMS:
-		var anim := _anim.get_animation(name)
+	if _anim == null:
+		push_warning("Player: no AnimationPlayer found — model will be static.")
+		return
+	for anim_name in LOOPED_ANIMS:
+		var anim := _anim.get_animation(anim_name)
 		if anim:
 			anim.loop_mode = Animation.LOOP_LINEAR
 	_anim.playback_default_blend_time = 0.2
-	_anim.play("Idle")
+	if _anim.has_animation("Idle"):
+		_anim.play("Idle")
 	_dress()
 	health.died.connect(_on_died)
 	var fs: Node = load("res://scripts/footsteps.gd").new()
@@ -110,7 +118,8 @@ func _physics_process(delta: float) -> void:
 	if (Input.is_key_pressed(KEY_F) or TouchControls.held("punch")) and _punch_cooldown == 0.0:
 		_punch_cooldown = 0.6
 		_punch()
-		_anim.play("Punch_Jab", 0.1)
+		if _anim != null and _anim.has_animation("Punch_Jab"):
+			_anim.play("Punch_Jab", 0.1)
 
 	move_and_slide()
 	_update_animation()
@@ -119,10 +128,13 @@ func _physics_process(delta: float) -> void:
 ## Pick the clip that matches what the body is actually doing. Punches are
 ## one-shots: while one is playing, locomotion keeps its hands off the player.
 func _update_animation() -> void:
+	if _anim == null:
+		return
 	if _anim.is_playing() and ONE_SHOTS.any(func(a): return _anim.current_animation.begins_with(a)):
 		return
 	if weapons.current != null and weapons.current.reloading:
-		_anim.play("Pistol_Reload", 0.1)
+		if _anim.has_animation("Pistol_Reload"):
+			_anim.play("Pistol_Reload", 0.1)
 		return
 
 	var target: String
@@ -139,7 +151,7 @@ func _update_animation() -> void:
 		else:
 			target = "Jog_Fwd"
 
-	if _anim.current_animation != target:
+	if _anim.current_animation != target and _anim.has_animation(target):
 		_anim.play(target, 0.2)
 
 
@@ -158,7 +170,8 @@ func _punch() -> void:
 
 
 func on_weapon_fired(hit: Object) -> void:
-	_anim.play("Pistol_Shoot", 0.05)
+	if _anim != null and _anim.has_animation("Pistol_Shoot"):
+		_anim.play("Pistol_Shoot", 0.05)
 	if hit is Node and hit.is_in_group("police"):
 		_hit_officer()
 	elif hit != null and hit.has_method("knock"):

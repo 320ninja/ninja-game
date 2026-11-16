@@ -31,3 +31,6 @@ mono_crash.*.json
 .vscode/
 *.swp
 builds/
+
+# Street Sentinel source FBX (81 MB — keep locally, Godot imports it on first open)
+assets/characters/street_sentinel/*.fbx
