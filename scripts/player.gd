@@ -35,47 +35,53 @@ func _find_anim_player() -> AnimationPlayer:
 
 func _ready() -> void:
 	add_to_group("player")
-	if _anim == null:
+	if _anim != null:
+		for anim_name in LOOPED_ANIMS:
+			var anim := _anim.get_animation(anim_name)
+			if anim:
+				anim.loop_mode = Animation.LOOP_LINEAR
+		_anim.playback_default_blend_time = 0.2
+		if _anim.has_animation("Idle"):
+			_anim.play("Idle")
+	else:
 		push_warning("Player: no AnimationPlayer found — model will be static.")
-		return
-	for anim_name in LOOPED_ANIMS:
-		var anim := _anim.get_animation(anim_name)
-		if anim:
-			anim.loop_mode = Animation.LOOP_LINEAR
-	_anim.playback_default_blend_time = 0.2
-	if _anim.has_animation("Idle"):
-		_anim.play("Idle")
 	_dress()
 	health.died.connect(_on_died)
 	var fs: Node = load("res://scripts/footsteps.gd").new()
 	add_child(fs)
 
 
-## The Quaternius mannequin ships banana-yellow with purple joint bands.
-## Recolour it into something that reads as clothes until we have real skins.
 func _dress() -> void:
-	var mesh: MeshInstance3D = $Model.find_child("Mannequin", true, false)
-	if mesh == null:
+	# If the old Quaternius mannequin is present, style it.
+	var mannequin: MeshInstance3D = $Model.find_child("Mannequin", true, false)
+	if mannequin != null:
+		var main: StandardMaterial3D = mannequin.mesh.surface_get_material(0).duplicate()
+		main.albedo_color = Color(0.08, 0.08, 0.09)
+		main.roughness = 0.88
+		mannequin.set_surface_override_material(0, main)
+		var joints: StandardMaterial3D = mannequin.mesh.surface_get_material(1).duplicate()
+		joints.albedo_color = Color(0.52, 0.36, 0.26)
+		joints.roughness = 0.78
+		mannequin.set_surface_override_material(1, joints)
 		return
-	# Black overshirt / jacket (surface 0 = main body)
-	var main: StandardMaterial3D = mesh.mesh.surface_get_material(0).duplicate()
-	main.albedo_color = Color(0.08, 0.08, 0.09)  # near-black jacket
-	main.metallic = 0.0
-	main.roughness = 0.88
-	mesh.set_surface_override_material(0, main)
-	# Joint bands recoloured to match skin tone (medium-dark, tattooed arms vibe)
-	var joints: StandardMaterial3D = mesh.mesh.surface_get_material(1).duplicate()
-	joints.albedo_color = Color(0.52, 0.36, 0.26)  # warm brown skin
-	joints.metallic = 0.0
-	joints.roughness = 0.78
-	mesh.set_surface_override_material(1, joints)
-	# Head / face skin tone
-	var head_node := $Model.find_child("Head", true, false) as MeshInstance3D
-	if head_node != null:
-		var head_mat: StandardMaterial3D = StandardMaterial3D.new()
-		head_mat.albedo_color = Color(0.52, 0.36, 0.26)
-		head_mat.roughness = 0.78
-		head_node.material_override = head_mat
+	# Street Sentinel (or any FBX character) — apply PBR textures to every mesh surface.
+	var albedo   := load("res://assets/characters/street_sentinel/albedo.png")   as Texture2D
+	var normal_t := load("res://assets/characters/street_sentinel/normal.png")   as Texture2D
+	var rough    := load("res://assets/characters/street_sentinel/roughness.png") as Texture2D
+	if albedo == null:
+		return
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture    = albedo
+	mat.normal_enabled    = normal_t != null
+	mat.normal_texture    = normal_t
+	mat.roughness_texture = rough
+	mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+	mat.roughness = 1.0
+	mat.metallic  = 0.0
+	for child in $Model.find_children("*", "MeshInstance3D", true, false):
+		var mi := child as MeshInstance3D
+		for i in mi.mesh.get_surface_count():
+			mi.set_surface_override_material(i, mat)
 
 
 func _physics_process(delta: float) -> void:
