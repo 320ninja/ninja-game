@@ -64,24 +64,12 @@ func _dress() -> void:
 		joints.roughness = 0.78
 		mannequin.set_surface_override_material(1, joints)
 		return
-	# Street Sentinel (or any FBX character) — apply PBR textures to every mesh surface.
-	var albedo   := load("res://assets/characters/street_sentinel/albedo.png")   as Texture2D
-	var normal_t := load("res://assets/characters/street_sentinel/normal.png")   as Texture2D
-	var rough    := load("res://assets/characters/street_sentinel/roughness.png") as Texture2D
-	if albedo == null:
-		return
-	var mat := StandardMaterial3D.new()
-	mat.albedo_texture    = albedo
-	mat.normal_enabled    = normal_t != null
-	mat.normal_texture    = normal_t
-	mat.roughness_texture = rough
-	mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
-	mat.roughness = 1.0
-	mat.metallic  = 0.0
+	# Street Sentinel — the FBX already has embedded materials with correct UVs.
+	# Just ensure no surface overrides are blocking them.
 	for child in $Model.find_children("*", "MeshInstance3D", true, false):
 		var mi := child as MeshInstance3D
 		for i in mi.mesh.get_surface_count():
-			mi.set_surface_override_material(i, mat)
+			mi.set_surface_override_material(i, null)
 
 
 func _physics_process(delta: float) -> void:
