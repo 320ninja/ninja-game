@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://assets/characters/street_sentinel/StreetSentinel.scn" id="2_model"]
+[ext_resource type="PackedScene" path="res://assets/characters/street_sentinel/StreetSentinelRigged.scn" id="2_model"]
 [ext_resource type="Script" path="res://scripts/health.gd" id="3_health"]
 [ext_resource type="Script" path="res://scripts/weapon_manager.gd" id="4_weapons"]
 
@@ -17,7 +17,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.88, 0)
 shape = SubResource("Shape_body")
 
 [node name="Model" parent="." instance=ExtResource("2_model")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 
 [node name="Health" type="Node" parent="."]
 script = ExtResource("3_health")

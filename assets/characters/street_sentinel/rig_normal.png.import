@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dy2khyx8t5wul"
-path="res://.godot/imported/roughness.png-690e0a5ee6205272850e7812d44105d0.ctex"
+uid="uid://c5ndc2o0r7gkb"
+path="res://.godot/imported/rig_normal.png-258b5217aba75cdbe676fa50de39fd36.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/street_sentinel/roughness.png"
-dest_files=["res://.godot/imported/roughness.png-690e0a5ee6205272850e7812d44105d0.ctex"]
+source_file="res://assets/characters/street_sentinel/rig_normal.png"
+dest_files=["res://.godot/imported/rig_normal.png-258b5217aba75cdbe676fa50de39fd36.ctex"]
 
 [params]
 

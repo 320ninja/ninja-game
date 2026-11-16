@@ -2,19 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgrfn6f5gnfev"
-path="res://.godot/imported/StreetSentinel_0.png-4cc3625500fafcfa351e1e277985694e.ctex"
+uid="uid://ctgda68tclqwf"
+path="res://.godot/imported/rig_roughness.png-ca22de755a085ecf280a5a8ebe4339e5.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "b79ce0958e064f5823979054bebef0d4"
 }
 
 [deps]
 
-source_file="res://assets/characters/street_sentinel/StreetSentinel_0.png"
-dest_files=["res://.godot/imported/StreetSentinel_0.png-4cc3625500fafcfa351e1e277985694e.ctex"]
+source_file="res://assets/characters/street_sentinel/rig_roughness.png"
+dest_files=["res://.godot/imported/rig_roughness.png-ca22de755a085ecf280a5a8ebe4339e5.ctex"]
 
 [params]
 
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

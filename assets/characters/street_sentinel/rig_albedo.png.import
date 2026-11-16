@@ -2,19 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://clnr8gbn5h28"
-path="res://.godot/imported/StreetSentinel_3.png-6490b9ce39858c9c3d132934febf7a7d.ctex"
+uid="uid://buy2baj3n83wx"
+path="res://.godot/imported/rig_albedo.png-41565ac9480ab6a4cdd6effe64161d41.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "1921d9c04878fee93b644314794adb1b"
 }
 
 [deps]
 
-source_file="res://assets/characters/street_sentinel/StreetSentinel_3.png"
-dest_files=["res://.godot/imported/StreetSentinel_3.png-6490b9ce39858c9c3d132934febf7a7d.ctex"]
+source_file="res://assets/characters/street_sentinel/rig_albedo.png"
+dest_files=["res://.godot/imported/rig_albedo.png-41565ac9480ab6a4cdd6effe64161d41.ctex"]
 
 [params]
 
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
