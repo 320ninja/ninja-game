@@ -64,10 +64,11 @@ func _dress() -> void:
 		joints.roughness = 0.78
 		mannequin.set_surface_override_material(1, joints)
 		return
-	# Street Sentinel — the FBX already has embedded materials with correct UVs.
-	# Just ensure no surface overrides are blocking them.
+	# Street Sentinel — clear any overrides so the FBX embedded material shows.
 	for child in $Model.find_children("*", "MeshInstance3D", true, false):
 		var mi := child as MeshInstance3D
+		if mi == null or mi.mesh == null:
+			continue
 		for i in mi.mesh.get_surface_count():
 			mi.set_surface_override_material(i, null)
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bgrfn6f5gnfev" path="res://assets/characters/street_sentinel/StreetSentinel_0.png" id="1_aq4ii"]
 [ext_resource type="Texture2D" uid="uid://b31hetqkf25jb" path="res://assets/characters/street_sentinel/StreetSentinel_1.png" id="2_iu6oe"]
-[ext_resource type="Texture2D" uid="uid://c1roughness" path="res://assets/characters/street_sentinel/StreetSentinel_2.png" id="3_rough"]
+[ext_resource type="Texture2D" uid="uid://bayaxbo8xlbk2" path="res://assets/characters/street_sentinel/StreetSentinel_2.png" id="3_rough"]
 
 [resource]
 resource_name = "Material.001"
