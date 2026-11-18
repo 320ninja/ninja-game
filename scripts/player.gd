@@ -2,9 +2,9 @@ extends CharacterBody3D
 ## On-foot player. Moves relative to wherever the camera is looking, which is
 ## what every third-person game does and what makes stick/WASD movement feel right.
 
-@export var walk_speed := 4.2
-@export var run_speed := 8.5
-@export var jump_velocity := 5.5
+@export var walk_speed := 2.8
+@export var run_speed := 5.5
+@export var jump_velocity := 9.0
 ## How quickly the player reaches target speed. Higher is snappier, less floaty.
 @export var acceleration := 14.0
 @export var air_control := 3.0
@@ -12,6 +12,8 @@ extends CharacterBody3D
 
 var running := false
 var dead := false
+
+const MAP_HALF := 390.0
 
 const HOSPITAL := Vector3(-31.2, 0.5, 8.0)
 const RESPAWN_DELAY := 3.0
@@ -117,6 +119,8 @@ func _physics_process(delta: float) -> void:
 			_anim.play("Punch_Jab", 0.1)
 
 	move_and_slide()
+	global_position.x = clamp(global_position.x, -MAP_HALF, MAP_HALF)
+	global_position.z = clamp(global_position.z, -MAP_HALF, MAP_HALF)
 	_update_animation()
 
 

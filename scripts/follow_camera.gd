@@ -70,8 +70,13 @@ func _physics_process(delta: float) -> void:
 	if global_position.distance_to(focus) > 0.05:
 		look_at(focus, Vector3.UP)
 
-	# Widen the lens as speed climbs - cheap and very effective sense of speed.
+	# Narrow FOV for sniper scope; widen with car speed otherwise.
 	var target_fov := 72.0
+	var player_node := get_tree().get_first_node_in_group("player")
+	if player_node != null and not in_car:
+		var wm := player_node.get_node_or_null("WeaponManager")
+		if wm != null and wm.current != null and wm.current.weapon_name == "Sniper Rifle":
+			target_fov = 20.0
 	if in_car:
 		target_fov += clampf((_game.driving.get_speed_kmh() - 50.0) * 0.14, 0.0, 22.0)
 	fov = lerpf(fov, target_fov, clampf(3.0 * delta, 0.0, 1.0))
